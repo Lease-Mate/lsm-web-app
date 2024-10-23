@@ -11,7 +11,15 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: "var(--primary)",
+        secondary: "var(--secondary)",
       },
+      backgroundImage: {
+        "landing-page": "url('/landing-page.jpg')",
+      },
+    },
+    fontFamily: {
+      sans: ["var(--font-inter)"],
     },
   },
   plugins: [],
