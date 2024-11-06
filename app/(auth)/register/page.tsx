@@ -1,7 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { DatePickerWithButtons } from "../components/date-picker";
+import { RegisterForm } from "@/components/auth/register-form";
 
 export default function LoginPage() {
   return (
@@ -10,39 +7,7 @@ export default function LoginPage() {
         <h1 className="font-bold text-2xl">Załóż darmowe konto!</h1>
         <h3 className="text-muted-foreground text-center">Dziękujemy za zaufanie.</h3>
       </div>
-      <div className="w-1/2 flex flex-col gap-5">
-        <div>
-          <Label htmlFor="email" className="font-bold">
-            Email
-          </Label>
-          <Input type="email" id="email" />
-        </div>
-        <div>
-          <Label htmlFor="password" className="font-bold">
-            Hasło
-          </Label>
-          <Input type="password" id="password" />
-        </div>
-        <div>
-          <Label htmlFor="name" className="font-bold">
-            Imię
-          </Label>
-          <Input type="text" id="name" />
-        </div>
-        <div>
-          <Label htmlFor="surname" className="font-bold">
-            Nazwisko
-          </Label>
-          <Input type="text" id="surname" />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="dob" className="font-bold">
-            Data urodzenia
-          </Label>
-          <DatePickerWithButtons />
-        </div>
-        <Button className="w-full font-bold">Zarejestruj się</Button>
-      </div>
+      <RegisterForm />
     </div>
   );
 }

@@ -1,6 +1,5 @@
+import { LoginForm } from "@/components/auth/login-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
 export default function LoginPage() {
@@ -10,21 +9,7 @@ export default function LoginPage() {
         <h1 className="font-bold text-2xl">Witamy z powrotem!</h1>
         <h3 className="text-muted-foreground">Cieszymy się, że do nas wrociłeś.</h3>
       </div>
-      <div className="w-1/2 flex flex-col gap-10">
-        <div>
-          <Label htmlFor="email" className="font-bold">
-            Email
-          </Label>
-          <Input type="email" id="email" />
-        </div>
-        <div>
-          <Label htmlFor="password" className="font-bold">
-            Hasło
-          </Label>
-          <Input type="password" id="password" />
-        </div>
-        <Button className="w-full font-bold">Zaloguj się</Button>
-      </div>
+      <LoginForm />
       <div className="flex items-center justify-around w-full">
         <Separator className="w-[35%]" />
         <span className="text-muted-foreground">lub</span>
