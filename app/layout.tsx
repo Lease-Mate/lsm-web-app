@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 
 export const metadata: Metadata = {
   title: "LeaseMate",
-  description: "LeaseMate - rent your property with ease",
+  description: "LeaseMate - wynajmij swoją nieruchomość z łatwością",
 };
 
 const inter = Inter({
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pl">
       <body className={`${inter.variable} font-sans`}>{children}</body>
     </html>
   );

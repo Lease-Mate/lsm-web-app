@@ -8,7 +8,7 @@ import { DatePickerWithRange } from "./date-picker-range";
 
 export default function SearchCard() {
   return (
-    <Card className="w-[30%] flex flex-col shadow-lg items-center text-center p-5 text-gray-900 bg-background">
+    <Card className="w-[30%] flex flex-col shadow-lg items-center text-center p-5 text-gray-900 bg-gray-50">
       <CardHeader>
         <CardTitle className="font-bold tracking-normal">Znajdź miejsce do wynajęcia</CardTitle>
         <CardDescription>Odnajdź swoją wymarzoną nieruchomość</CardDescription>

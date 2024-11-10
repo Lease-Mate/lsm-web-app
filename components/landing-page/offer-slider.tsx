@@ -30,7 +30,7 @@ export default function OfferSlider({ title }: OfferSliderProps) {
   }, [api, updateScrollState]);
 
   return (
-    <Card className="shadow-lg text-gray-900">
+    <Card className="shadow-lg text-gray-900 bg-gray-50">
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="w-full h-full flex flex-row items-center justify-between">
           <div className="font-bold text-lg">{title}</div>
