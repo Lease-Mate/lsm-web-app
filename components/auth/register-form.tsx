@@ -14,8 +14,10 @@ import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale/pl";
 import { register } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 export function RegisterForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -32,7 +34,9 @@ export function RegisterForm() {
     const result = await register(values);
     if (result.error) {
       form.setError("root", { type: "custom", message: result.error });
+      return;
     }
+    router.replace("/");
   }
 
   return (

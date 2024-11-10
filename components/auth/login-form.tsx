@@ -9,8 +9,10 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { login } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -18,13 +20,13 @@ export function LoginForm() {
       password: "",
     },
   });
-
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    const result = await login(values);
-    if (result.error) {
-      form.setError("root", { type: "custom", message: result.error });
+    const loginResult = await login(values);
+    if (loginResult.error) {
+      form.setError("root", { type: "custom", message: loginResult.error });
+      return;
     }
-    //TODO: Add login logic
+    router.replace("/");
   }
 
   return (

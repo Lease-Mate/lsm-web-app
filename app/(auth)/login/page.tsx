@@ -1,11 +1,13 @@
 import { LoginForm } from "@/components/auth/login-form";
+import Logo from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 export default function LoginPage() {
   return (
-    <div className="flex-1 flex flex-col items-center w-1/2 gap-10">
-      <div className="">
+    <div className="flex flex-col items-center w-1/2 gap-10">
+      <Logo className="text-6xl" />
+      <div>
         <h1 className="font-bold text-2xl">Witamy z powrotem!</h1>
         <h3 className="text-muted-foreground">Cieszymy się, że do nas wrociłeś.</h3>
       </div>
