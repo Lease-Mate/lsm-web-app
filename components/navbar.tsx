@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { logout } from "@/lib/actions";
+import { logout } from "@/lib/actions/user-actions";
 import { useRef } from "react";
 import Logo from "./logo";
 

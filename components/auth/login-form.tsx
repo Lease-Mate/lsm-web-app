@@ -8,7 +8,7 @@ import { loginSchema } from "@/lib/schemas/loginSchema";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
-import { login } from "@/lib/actions";
+import { login } from "@/lib/actions/user-actions";
 import { useRouter } from "next/navigation";
 
 export function LoginForm() {
@@ -20,6 +20,7 @@ export function LoginForm() {
       password: "",
     },
   });
+
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     const loginResult = await login(values);
     if (loginResult.error) {

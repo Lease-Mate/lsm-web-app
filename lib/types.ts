@@ -12,3 +12,18 @@ export type User = {
   surname: string;
   dateOfBirth: Date;
 };
+
+export type Country = {
+  isoCode: string;
+  name: string;
+};
+
+export type Region = {
+  id: string;
+  name: string;
+};
+
+export type City = {
+  id: string;
+  name: string;
+};

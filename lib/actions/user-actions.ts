@@ -1,7 +1,7 @@
 "use server";
 
 import { format } from "date-fns";
-import { LoginRequest, RegisterRequest } from "./types";
+import { LoginRequest, RegisterRequest } from "../types";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -64,11 +64,10 @@ export async function getUserByToken(jwt: string) {
 
 export async function getCurrentUser() {
   const accessToken = (await cookies()).get("accessToken");
+
   if (!accessToken) return null;
+
   const user = await getUserByToken(accessToken.value);
-  if (user.error) {
-    (await cookies()).delete("accessToken");
-    return null;
-  }
-  return user;
+
+  return user.error ? null : user;
 }
