@@ -3,19 +3,18 @@
 import { z } from "zod";
 
 export const searchSchema = z.object({
-  country: z.string().min(1, { message: "Kraj jest wymagane" }),
-  region: z.string().min(1, { message: "Województwo jest wymagane" }),
-  city: z.string().min(1, { message: "Miasto jest wymagane" }),
+  city: z.string().optional(),
   dateRange: z
     .object({
-      from: z.date(),
-      to: z.date(),
+      from: z.date().optional(),
+      to: z.date().optional(),
     })
-    .refine((date) => date.to >= date.from, {
+    .refine((date) => !date.from || !date.to || date.to >= date.from, {
       message: "Data końcowa musi być późniejsza niż początkowa",
-    }),
-  rentFrom: z.number().int().min(0, { message: "Cena wynajmu od musi być liczbą dodatnią" }),
-  rentTo: z.number().int().min(0, { message: "Cena wynajmu do musi być liczbą dodatnią" }),
-  surfaceAreaFrom: z.number().int().min(0, { message: "Powierzchnia od musi być liczbą dodatnią" }),
-  surfaceAreaTo: z.number().int().min(0, { message: "Powierzchnia do musi być liczbą dodatnią" }),
+    })
+    .optional(),
+  rentFrom: z.number().int().nonnegative().optional(),
+  rentTo: z.number().int().nonnegative().optional(),
+  surfaceAreaFrom: z.number().int().nonnegative().optional(),
+  surfaceAreaTo: z.number().int().nonnegative().optional(),
 });

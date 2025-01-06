@@ -3,10 +3,9 @@
 import { useForm } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { z } from "zod";
-import { searchCardSchema } from "@/lib/schemas/searchCardSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { getSupportedCities, getSupportedCountries, getSupportedRegions } from "@/lib/actions/search-actions";
 import { City, Country, Region } from "@/lib/types";
 import { Button } from "../ui/button";
@@ -18,8 +17,14 @@ import { pl } from "date-fns/locale";
 import { Calendar } from "../ui/calendar";
 import { Label } from "../ui/label";
 import { useRouter } from "next/navigation";
+import { searchSchema } from "@/lib/schemas/searchSchema";
+import { Input } from "../ui/input";
 
-export default function SearchCardForm() {
+type OfferSearchFormProps = {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>();
   const [regions, setRegions] = useState<Region[]>([]);
@@ -27,19 +32,31 @@ export default function SearchCardForm() {
   const [cities, setCities] = useState<City[]>([]);
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof searchCardSchema>>({
-    resolver: zodResolver(searchCardSchema),
+  const form = useForm<z.infer<typeof searchSchema>>({
+    resolver: zodResolver(searchSchema),
     defaultValues: {
       city: "",
+      rentFrom: 0,
+      rentTo: 0,
+      surfaceAreaFrom: 0,
+      surfaceAreaTo: 0,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof searchCardSchema>) {
-    const params = {
-      city: values.city,
-      availableTo: values.dateRange.to.toISOString().split("T")[0],
-    };
+  async function onSubmit(values: z.infer<typeof searchSchema>) {
+    const params = Object.fromEntries(
+      Object.entries({
+        city: values.city,
+        availableTo: values.dateRange?.to?.toISOString().split("T")[0],
+        rentFrom: values.rentFrom ? values.rentFrom.toString() : undefined,
+        rentTo: values.rentTo ? values.rentTo.toString() : undefined,
+        surfaceAreaFrom: values.surfaceAreaFrom ? values.surfaceAreaFrom.toString() : undefined,
+        surfaceAreaTo: values.surfaceAreaTo ? values.surfaceAreaTo.toString() : undefined,
+      }).filter(([_, value]) => value !== undefined)
+    );
+
     const urlParams = new URLSearchParams(params as Record<string, string>).toString();
+    setOpen(false);
     router.push(`/offers?${urlParams}`);
   }
 
@@ -140,6 +157,7 @@ export default function SearchCardForm() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="dateRange"
@@ -172,7 +190,7 @@ export default function SearchCardForm() {
                       )}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
                     <Calendar
                       initialFocus
                       mode="range"
@@ -187,8 +205,56 @@ export default function SearchCardForm() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="rentFrom"
+          render={({ field }) => (
+            <FormItem className="w-full text-left">
+              <FormLabel className="font-bold">Cena od</FormLabel>
+              <FormControl>
+                <Input type="number" min={0} onChange={field.onChange} defaultValue={field.value} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="rentTo"
+          render={({ field }) => (
+            <FormItem className="w-full text-left">
+              <FormLabel className="font-bold">Cena do</FormLabel>
+              <FormControl>
+                <Input type="number" min={0} onChange={field.onChange} defaultValue={field.value} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="surfaceAreaFrom"
+          render={({ field }) => (
+            <FormItem className="w-full text-left">
+              <FormLabel className="font-bold">Powierzchnia od</FormLabel>
+              <FormControl>
+                <Input type="number" min={0} onChange={field.onChange} defaultValue={field.value} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="surfaceAreaTo"
+          render={({ field }) => (
+            <FormItem className="w-full text-left">
+              <FormLabel className="font-bold">Powierzchnia do</FormLabel>
+              <FormControl>
+                <Input type="number" min={0} onChange={field.onChange} defaultValue={field.value} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
         <Button type="submit" className="font-bold tracking-wide mt-3 bg-yellow-400 w-full">
-          Wyszukaj
+          Zastosuj
         </Button>
       </form>
     </Form>

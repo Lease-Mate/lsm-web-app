@@ -8,7 +8,7 @@ export default async function ContentLayout({ children }: { children: ReactNode 
 
   return (
     <AuthContextProvider currentUser={user}>
-      <div className="h-screen w-screen bg-landing-page flex flex-col gap-20 items-center">
+      <div className="h-screen w-screen bg-landing-page flex flex-col gap-14 items-center p-8">
         <Navbar />
         {children}
       </div>
