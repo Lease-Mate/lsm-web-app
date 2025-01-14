@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale/pl";
-import { register } from "@/lib/actions";
+import { register } from "@/lib/actions/user-actions";
 import { useRouter } from "next/navigation";
 
 export function RegisterForm() {
