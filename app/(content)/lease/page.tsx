@@ -5,7 +5,7 @@ export default function LeasePage() {
   return (
     <>
       <div className="w-[75%] flex-1 shadow-lg overflow-hidden">
-        <ScrollArea className="w-full h-full bg-background p-5">
+        <ScrollArea className="w-full h-full bg-background p-5" type="always">
           <OfferForm />
         </ScrollArea>
       </div>

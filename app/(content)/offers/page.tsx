@@ -21,6 +21,7 @@ export default function OffersPage() {
     const fetchOffers = async () => {
       const params = {
         city: searchParams.get("city") || undefined,
+        availableFrom: searchParams.get("availableFrom") || undefined,
         availableTo: searchParams.get("availableTo") || undefined,
         rentFrom: searchParams.get("rentFrom") ? parseInt(searchParams.get("rentFrom") as string) : undefined,
         rentTo: searchParams.get("rentTo") ? parseInt(searchParams.get("rentTo") as string) : undefined,
@@ -52,7 +53,7 @@ export default function OffersPage() {
     <>
       <div className="w-[90%] bg-background flex-1 p-5 flex flex-col overflow-hidden">
         <div className="flex justify-between items-center border-b border-border p-3">
-          <h1 className="font-bold text-lg">Wybrane oferty</h1>
+          <h1 className="font-bold text-xl">Wybrane oferty</h1>
           <div className="flex gap-2">
             <SortByButton sortBy={sortBy} onSortChange={(field, order) => setSortBy({ field, order })} />
             <OfferFilterSheet />

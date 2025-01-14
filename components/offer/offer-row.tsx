@@ -25,15 +25,37 @@ export default function OfferRow({ offer }: OfferRowProps) {
 
   return (
     <div className="bg-background p-4 flex gap-10">
-      <Image src={url} width={400} height={230} alt="offer image" className="w-[400px] h-[230px]" />
+      <Image src={url} width={350} height={200} alt="offer image" className="w-[350px] h-[200px]" />
       <div className="flex-1 flex flex-col justify-between">
-        <div>{offer.title}</div>
-        <div>{offer.address.street + " " + offer.address.buildingNumber + " m. " + offer.address.apartmentNumber}</div>
+        <div className="font-bold text-xl flex justify-between">
+          <span>{offer.title}</span>
+          <span>{offer.rent + " zł / miesiąc"}</span>
+        </div>
+        <div>
+          <div>{offer.title}</div>
+          <div>{"Dostępne od " + offer.availableFrom}</div>
+        </div>
+        <div>
+          <div>
+            {offer.address.street +
+              " " +
+              offer.address.buildingNumber +
+              " m. " +
+              offer.address.apartmentNumber +
+              ", " +
+              offer.address.zipCode +
+              " " +
+              offer.address.city}
+          </div>
+          <div>{offer.rooms + (offer.rooms > 4 ? " pokoi " : " pokoje ") + "" + offer.surfaceArea + " m^2"}</div>
+        </div>
+        {/* <div></div>
+        <div></div>
         <div>{offer.address.zipCode + " " + offer.address.city}</div>
         <div>{offer.rooms + " pokoi, " + offer.surfaceArea + " m^2"}</div>
         {offer.floor && <div>Piętro {offer.floor}</div>}
-        <div>{"Dostępne od " + offer.availableFrom}</div>
-        <div>{offer.rent + " zł/miesiąc"}</div>
+        <div></div>
+        <div>{offer.rent + " zł/miesiąc"}</div> */}
       </div>
     </div>
   );

@@ -29,16 +29,18 @@ export default function SearchCardForm() {
 
   const form = useForm<z.infer<typeof searchCardSchema>>({
     resolver: zodResolver(searchCardSchema),
-    defaultValues: {
-      city: "",
-    },
   });
 
   async function onSubmit(values: z.infer<typeof searchCardSchema>) {
-    const params = {
-      city: values.city,
-      availableTo: values.dateRange.to.toISOString().split("T")[0],
-    };
+    const params = Object.fromEntries(
+      Object.entries({
+        country: selectedCountry,
+        region: selectedRegion,
+        city: values.city,
+        availableFrom: values.dateRange?.from?.toLocaleDateString(),
+        availableTo: values.dateRange?.to?.toLocaleDateString(),
+      }).filter(([, value]) => value !== undefined)
+    );
     const urlParams = new URLSearchParams(params as Record<string, string>).toString();
     router.push(`/offers?${urlParams}`);
   }

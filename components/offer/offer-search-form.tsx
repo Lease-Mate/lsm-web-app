@@ -10,13 +10,13 @@ import { getSupportedCities, getSupportedCountries, getSupportedRegions } from "
 import { City, Country, Region } from "@/lib/types";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
+import { cn, parseLocalDateString } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { Calendar } from "../ui/calendar";
 import { Label } from "../ui/label";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { searchSchema } from "@/lib/schemas/searchSchema";
 import { Input } from "../ui/input";
 
@@ -32,32 +32,54 @@ export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
   const [cities, setCities] = useState<City[]>([]);
   const router = useRouter();
 
+  const currentUrl = useSearchParams();
+  const currentParams = {
+    country: currentUrl.get("country") || undefined,
+    region: currentUrl.get("region") || undefined,
+    city: currentUrl.get("city") || undefined,
+    availableFrom: currentUrl.get("availableFrom") || undefined,
+    availableTo: currentUrl.get("availableTo") || undefined,
+    rentFrom: currentUrl.get("rentFrom") ? parseInt(currentUrl.get("rentFrom") as string) : undefined,
+    rentTo: currentUrl.get("rentTo") ? parseInt(currentUrl.get("rentTo") as string) : undefined,
+    surfaceAreaFrom: currentUrl.get("surfaceAreaFrom")
+      ? parseInt(currentUrl.get("surfaceAreaFrom") as string)
+      : undefined,
+    surfaceAreaTo: currentUrl.get("surfaceAreaTo") ? parseInt(currentUrl.get("surfaceAreaTo") as string) : undefined,
+  };
+
   const form = useForm<z.infer<typeof searchSchema>>({
     resolver: zodResolver(searchSchema),
     defaultValues: {
-      city: "",
-      rentFrom: 0,
-      rentTo: 0,
-      surfaceAreaFrom: 0,
-      surfaceAreaTo: 0,
+      city: currentParams.city,
+      rentFrom: currentParams.rentFrom,
+      rentTo: currentParams.rentTo,
+      surfaceAreaFrom: currentParams.surfaceAreaFrom,
+      surfaceAreaTo: currentParams.surfaceAreaTo,
+      dateRange: {
+        from: currentParams.availableFrom ? parseLocalDateString(currentParams.availableFrom) : undefined,
+        to: currentParams.availableTo ? parseLocalDateString(currentParams.availableTo) : undefined,
+      },
     },
   });
 
   async function onSubmit(values: z.infer<typeof searchSchema>) {
     const params = Object.fromEntries(
       Object.entries({
+        country: selectedCountry,
+        region: selectedRegion,
         city: values.city,
-        availableTo: values.dateRange?.to?.toISOString().split("T")[0],
+        availableFrom: values.dateRange?.from?.toLocaleDateString(),
+        availableTo: values.dateRange?.to?.toLocaleDateString(),
         rentFrom: values.rentFrom ? values.rentFrom.toString() : undefined,
         rentTo: values.rentTo ? values.rentTo.toString() : undefined,
         surfaceAreaFrom: values.surfaceAreaFrom ? values.surfaceAreaFrom.toString() : undefined,
         surfaceAreaTo: values.surfaceAreaTo ? values.surfaceAreaTo.toString() : undefined,
-      }).filter(([_, value]) => value !== undefined)
+      }).filter(([, value]) => value !== undefined)
     );
 
-    const urlParams = new URLSearchParams(params as Record<string, string>).toString();
+    const urlSearchParams = new URLSearchParams(params as Record<string, string>).toString();
     setOpen(false);
-    router.push(`/offers?${urlParams}`);
+    router.push(`/offers?${urlSearchParams}`);
   }
 
   useEffect(() => {
@@ -67,6 +89,9 @@ export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
     }
 
     fetchCountries();
+    if (currentParams.country) {
+      setSelectedCountry(currentParams.country);
+    }
   }, []);
 
   useEffect(() => {
@@ -78,6 +103,9 @@ export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
     }
 
     fetchRegions();
+    if (currentParams.region) {
+      setSelectedRegion(currentParams.region);
+    }
   }, [selectedCountry]);
 
   useEffect(() => {
@@ -100,6 +128,7 @@ export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
             onValueChange={(e) => {
               setSelectedCountry(e);
             }}
+            defaultValue={currentParams.country}
           >
             <SelectTrigger>
               <SelectValue placeholder="Wybierz kraj..." />
@@ -120,6 +149,7 @@ export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
             onValueChange={(e) => {
               setSelectedRegion(e);
             }}
+            defaultValue={currentParams.region}
           >
             <SelectTrigger>
               <SelectValue placeholder="Wybierz województwo..." />

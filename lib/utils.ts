@@ -26,3 +26,8 @@ export function flattenObject(obj: object) {
 
   return flattened;
 }
+
+export function parseLocalDateString(dateString: string) {
+  const [day, month, year] = dateString.split(".").map(Number);
+  return new Date(year, month - 1, day);
+}

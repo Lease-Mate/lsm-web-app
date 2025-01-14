@@ -63,24 +63,6 @@ export default function OfferForm() {
 
   const form = useForm<z.infer<typeof offerSchema>>({
     resolver: zodResolver(offerSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      availableFrom: new Date(),
-      rent: undefined,
-      address: {
-        country: "",
-        region: "",
-        city: "",
-        street: "",
-        zipCode: "",
-        buildingNumber: "",
-        apartmentNumber: "",
-      },
-      rooms: undefined,
-      surfaceArea: undefined,
-      floor: undefined,
-    },
   });
 
   async function onSubmit(values: z.infer<typeof offerSchema>) {
