@@ -23,4 +23,7 @@ export const offerSchema = z.object({
   surfaceArea: z.coerce.number().int().min(1, "Powierzchnia jest wymagana"),
   floor: z.coerce.number().int().optional(),
   thumbnail: z.custom<File>((file) => file instanceof File, "Musisz przesłac plik obrazu"),
+  images: z
+    .array(z.custom<File>((file) => file instanceof File, "Musisz przesłać plik obrazu"))
+    .min(1, "Musisz przesłać przynajmniej jedno zdjęcie"),
 });

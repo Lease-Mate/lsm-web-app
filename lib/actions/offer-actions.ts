@@ -9,6 +9,7 @@ export default async function createOffer(data: z.infer<typeof offerSchema>) {
   const accessToken = await getAccessToken();
   const createOfferResult = await createOfferRequest(accessToken);
   const addThumbnailResult = await changeThumbnail(accessToken, createOfferResult.id, data.thumbnail);
+  const addImagesToOfferResult = await addImagesToOffer(data.images, createOfferResult.id, accessToken);
 
   const parsedData: OfferRequest = { ...data, thumbnailId: addThumbnailResult.id };
 
@@ -33,6 +34,27 @@ export async function createOfferRequest(accessToken: string) {
   }
 
   return result.json();
+}
+
+export async function addImagesToOffer(images: File[], offerId: string, accessToken: string) {
+  const promises = images.map(async (image) => {
+    const formData = new FormData();
+    formData.append("file", image);
+
+    const result = await fetch(process.env.FILE_API_URL + `/image/offer/${offerId}/add`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+    if (!result.ok) {
+      throw new Error("Nie udało się dodać obrazu");
+    }
+    return await result.json();
+  });
+
+  return Promise.all(promises);
 }
 
 export async function changeThumbnail(accessToken: string, offerId: string, file?: File) {
@@ -100,6 +122,16 @@ export async function getOffersByParameters(params: OfferSearchParameters) {
 
   if (!result.ok) {
     throw new Error("Nie udało się pobrać ofert");
+  }
+
+  return result.json();
+}
+
+export async function getOfferById(offerId: string) {
+  const result = await fetch(process.env.API_URL + `/offer/internal/${offerId}`);
+
+  if (!result.ok) {
+    throw new Error("Nie udało się pobrać oferty");
   }
 
   return result.json();

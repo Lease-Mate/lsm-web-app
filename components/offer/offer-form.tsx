@@ -67,6 +67,7 @@ export default function OfferForm() {
 
   async function onSubmit(values: z.infer<typeof offerSchema>) {
     const result = await createOffer(values);
+    console.log(result);
 
     //TODO: Handle error
 
@@ -322,6 +323,24 @@ export default function OfferForm() {
                 type="file"
                 accept="image/*, application/pdf"
                 onChange={(event) => onChange(event.target.files && event.target.files[0])}
+              />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="images"
+          render={({ field: { value, onChange, ...fieldProps } }) => (
+            <FormItem>
+              <FormLabel className="font-bold">Zdjęcia</FormLabel>
+              <Input
+                {...fieldProps}
+                placeholder="Picture"
+                type="file"
+                accept="image/*, application/pdf"
+                multiple
+                onChange={(event) => onChange([...Array.from(event.target.files || [])])}
               />
             </FormItem>
           )}
