@@ -105,6 +105,7 @@ export default function SearchCardForm() {
             onValueChange={(e) => {
               setSelectedRegion(e);
             }}
+            disabled={!selectedCountry}
           >
             <SelectTrigger>
               <SelectValue placeholder="Wybierz województwo..." />
@@ -126,7 +127,7 @@ export default function SearchCardForm() {
             <FormItem className="w-full text-left">
               <FormLabel className="font-bold">Miasto</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!selectedRegion}>
                   <SelectTrigger>
                     <SelectValue placeholder="Wybierz miasto..." />
                   </SelectTrigger>

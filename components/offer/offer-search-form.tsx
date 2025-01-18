@@ -51,10 +51,10 @@ export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
     resolver: zodResolver(searchSchema),
     defaultValues: {
       city: currentParams.city,
-      rentFrom: currentParams.rentFrom,
-      rentTo: currentParams.rentTo,
-      surfaceAreaFrom: currentParams.surfaceAreaFrom,
-      surfaceAreaTo: currentParams.surfaceAreaTo,
+      rentFrom: currentParams.rentFrom || 0,
+      rentTo: currentParams.rentTo || 0,
+      surfaceAreaFrom: currentParams.surfaceAreaFrom || 0,
+      surfaceAreaTo: currentParams.surfaceAreaTo || 0,
       dateRange: {
         from: currentParams.availableFrom ? parseLocalDateString(currentParams.availableFrom) : undefined,
         to: currentParams.availableTo ? parseLocalDateString(currentParams.availableTo) : undefined,
@@ -150,6 +150,7 @@ export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
               setSelectedRegion(e);
             }}
             defaultValue={currentParams.region}
+            disabled={!selectedCountry}
           >
             <SelectTrigger>
               <SelectValue placeholder="Wybierz województwo..." />
@@ -171,7 +172,7 @@ export default function OfferSearchForm({ setOpen }: OfferSearchFormProps) {
             <FormItem className="w-full text-left">
               <FormLabel className="font-bold">Miasto</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!selectedRegion}>
                   <SelectTrigger>
                     <SelectValue placeholder="Wybierz miasto..." />
                   </SelectTrigger>
