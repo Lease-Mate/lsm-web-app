@@ -15,10 +15,16 @@ import {
 import { logout } from "@/lib/actions/user-actions";
 import { useRef } from "react";
 import Logo from "./logo";
+import { toast } from "sonner";
 
 export default function Navbar() {
   const { user } = useAuth();
   const formRef = useRef<HTMLFormElement>(null);
+
+  const handleLogout = async () => {
+    toast.success("Wylogowano pomyślnie");
+    await logout();
+  };
 
   return (
     <nav className="w-full h-[8%] px-5 flex justify-center text-gray-900 tracking-wide">
@@ -66,7 +72,7 @@ export default function Navbar() {
               <DropdownMenuItem>Pomoc</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <form action={logout} className="flex" ref={formRef}>
+                <form action={handleLogout} className="flex" ref={formRef}>
                   <div className="flex-1 cursor-pointer" onClick={() => formRef.current?.requestSubmit()}>
                     Wyloguj
                   </div>

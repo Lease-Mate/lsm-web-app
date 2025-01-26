@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { pl } from "date-fns/locale/pl";
 import { register } from "@/lib/actions/user-actions";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -34,8 +35,10 @@ export function RegisterForm() {
     const result = await register(values);
     if (result.error) {
       form.setError("root", { type: "custom", message: result.error });
+      toast.error("Rejestracja nie powiodła się. Spróbuj ponownie.");
       return;
     }
+    toast.success("Rejestracja zakończona pomyślnie");
     router.replace("/");
   }
 

@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import createOffer from "@/lib/actions/offer-actions";
 import { Textarea } from "../ui/textarea";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function OfferForm() {
   const [countries, setCountries] = useState<Country[]>([]);
@@ -67,13 +68,12 @@ export default function OfferForm() {
 
   async function onSubmit(values: z.infer<typeof offerSchema>) {
     const result = await createOffer(values);
-    console.log(result);
-
-    //TODO: Handle error
-
-    if (!result.error) {
-      router.push("/");
+    if (result.error) {
+      toast.error("Nie udało się dodać oferty. Spróbuj ponownie.");
+      return;
     }
+    toast.success("Oferta została dodana pomyślnie");
+    router.push(`/offer/${result.id}`);
   }
 
   return (
