@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { login } from "@/lib/actions/user-actions";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function LoginForm() {
   const router = useRouter();
@@ -25,8 +26,10 @@ export function LoginForm() {
     const loginResult = await login(values);
     if (loginResult.error) {
       form.setError("root", { type: "custom", message: loginResult.error });
+      toast.error("Logowanie nie powiodło się. Spróbuj ponownie.");
       return;
     }
+    toast.success("Zalogowano pomyślnie");
     router.replace("/");
   }
 
