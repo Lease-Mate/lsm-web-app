@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { House, LandPlot, MapPinHouse } from "lucide-react";
 import ApiImage from "../api-image";
+import { cn } from "@/lib/utils";
 
 type OfferRowProps = {
   offer: Offer;
+  className?: string;
 };
 
-export default function OfferRow({ offer }: OfferRowProps) {
+export default function OfferRow({ offer, className }: OfferRowProps) {
   const [thumbnail, setThumbnail] = useState<string>("");
   const router = useRouter();
 
@@ -26,7 +28,10 @@ export default function OfferRow({ offer }: OfferRowProps) {
 
   return (
     <div
-      className="bg-background p-4 pr-6 flex gap-10 cursor-pointer hover:bg-gray-200/55 ease-in duration-200 border-b border-border"
+      className={cn(
+        "bg-background p-4 pr-6 flex gap-10 cursor-pointer hover:bg-gray-200/55 ease-in duration-200 border-b border-border",
+        className
+      )}
       onClick={() => router.push(`/offer/${offer.id}`)}
     >
       <ApiImage base64={thumbnail} width={350} height={200} alt="offer image" className="w-[350px] h-[200px]" />

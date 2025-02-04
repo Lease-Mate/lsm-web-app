@@ -136,3 +136,34 @@ export async function getOfferById(offerId: string) {
 
   return result.json();
 }
+
+export async function getOffersForUser() {
+  const accessToken = await getAccessToken();
+  const result = await fetch(process.env.OFFERS_API_URL + "/user/search", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!result.ok) {
+    throw new Error("Nie udało się pobrać ofert");
+  }
+
+  return result.json();
+}
+
+export async function deleteOffer(offerId: string) {
+  const accessToken = await getAccessToken();
+  const result = await fetch(process.env.OFFERS_API_URL + `/${offerId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!result.ok) {
+    return { error: "Nie udało się usunąć oferty." };
+  }
+
+  return;
+}
