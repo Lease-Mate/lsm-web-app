@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { deleteOffer, getOffersForUser } from "@/lib/actions/offer-actions";
+import { deleteOffer, getOffersForUser, publishOffer } from "@/lib/actions/offer-actions";
 import { Offer } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -59,6 +59,17 @@ export default function MyOffersPage() {
     return;
   };
 
+  const handleOfferPublish = async (offerId: string) => {
+    const result = await publishOffer(offerId);
+    if (result?.error) {
+      toast.error("Nie udało się opublikować oferty");
+      return;
+    }
+    setOffers(offers.map((offer) => (offer.id === offerId ? { ...offer, offerStatus: "PUBLISHED" } : offer)));
+    toast.success("Oferta została opublikowana");
+    return;
+  };
+
   return (
     <>
       <div className="w-[90%] bg-background flex-1 p-5 flex flex-col overflow-hidden">
@@ -72,16 +83,36 @@ export default function MyOffersPage() {
           {sortedOffers.length > 0 ? (
             sortedOffers.map((offer) => (
               <div key={offer.id} className="flex">
-                <OfferRow key={offer.id} offer={offer} className="flex-1" />
+                <OfferRow key={offer.id} offer={offer} className="flex-1" showBadge={true} />
                 <div className="flex flex-col">
                   <Button
                     variant={"outline"}
                     size="icon"
                     className="flex-1 w-full"
-                    onClick={() => router.push(`/offers/edit/${offer.id}`)}
+                    onClick={() => router.push(`/offer/edit/${offer.id}`)}
                   >
                     Edytuj
                   </Button>
+                  {offer.offerStatus === "UNPAID" && (
+                    <Button
+                      variant={"outline"}
+                      size="icon"
+                      className="flex-1 w-full"
+                      onClick={() => router.push(`/offer/${offer.id}/payment`)}
+                    >
+                      Opłać
+                    </Button>
+                  )}
+                  {offer.offerStatus === "PAID" && (
+                    <Button
+                      variant={"outline"}
+                      size="icon"
+                      className="flex-1 w-full"
+                      onClick={() => handleOfferPublish(offer.id)}
+                    >
+                      Opublikuj
+                    </Button>
+                  )}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant={"outline"} className="flex-1 w-full">
@@ -95,14 +126,7 @@ export default function MyOffersPage() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleOfferDelete(offer.id)}>
-                          {/* <form className="flex-1 w-full p-0" onSubmit={handleOfferDelete}>
-                            <Button variant={"outline"} type="submit" className="w-full">
-                              Usuń
-                            </Button>
-                          </form> */}
-                          Usuń
-                        </AlertDialogAction>
+                        <AlertDialogAction onClick={() => handleOfferDelete(offer.id)}>Usuń</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>

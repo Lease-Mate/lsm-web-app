@@ -1,7 +1,7 @@
 "use client";
 
 import { getSupportedCities, getSupportedCountries, getSupportedRegions } from "@/lib/actions/search-actions";
-import { offerSchema } from "@/lib/schemas/offerSchema";
+import { offerEditSchema, offerSchema } from "@/lib/schemas/offerSchema";
 import { City, Country, Region } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -17,12 +17,18 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { pl } from "date-fns/locale";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import createOffer from "@/lib/actions/offer-actions";
+import { editOffer } from "@/lib/actions/offer-actions";
 import { Textarea } from "../ui/textarea";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export default function OfferForm() {
+type OfferFormProps = {
+  offer: z.infer<typeof offerSchema> & {
+    thumbnailId: string;
+  };
+};
+
+export default function OfferEditForm({ offer }: OfferFormProps) {
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>();
   const [regions, setRegions] = useState<Region[]>([]);
@@ -36,8 +42,10 @@ export default function OfferForm() {
       const countries = await getSupportedCountries();
       setCountries(countries);
     }
-
     fetchCountries();
+    if (offer) {
+      setSelectedCountry(offer.address.country);
+    }
   }, []);
 
   useEffect(() => {
@@ -49,6 +57,9 @@ export default function OfferForm() {
     }
 
     fetchRegions();
+    if (offer) {
+      setSelectedRegion(offer.address.region);
+    }
   }, [selectedCountry]);
 
   useEffect(() => {
@@ -62,18 +73,22 @@ export default function OfferForm() {
     fetchCities();
   }, [selectedRegion]);
 
-  const form = useForm<z.infer<typeof offerSchema>>({
-    resolver: zodResolver(offerSchema),
+  const form = useForm<z.infer<typeof offerEditSchema>>({
+    resolver: zodResolver(offerEditSchema),
+    defaultValues: offer,
   });
 
-  async function onSubmit(values: z.infer<typeof offerSchema>) {
-    const result = await createOffer(values);
-    if (result.error) {
-      toast.error("Nie udało się dodać oferty. Spróbuj ponownie.");
-      return;
+  async function onSubmit(values: z.infer<typeof offerEditSchema>) {
+    const result = await editOffer(offer.id, {
+      ...values,
+      thumbnailId: offer.thumbnailId,
+    });
+    if (!result.error) {
+      toast.success("Oferta została zaktualizowana");
+      router.push(`/offer/${offer.id}`);
+    } else {
+      toast.error("Nie udało się zaktualizować oferty");
     }
-    toast.success("Oferta została dodana pomyślnie");
-    router.push(`/my-offers`);
   }
 
   return (
@@ -121,13 +136,7 @@ export default function OfferForm() {
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                    />
+                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
                   </PopoverContent>
                 </Popover>
               </FormItem>
@@ -159,13 +168,14 @@ export default function OfferForm() {
                       field.onChange(e);
                       setSelectedCountry(e);
                     }}
+                    defaultValue={offer.address.country}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Wybierz kraj..." />
                     </SelectTrigger>
                     <SelectContent>
                       {countries.map((country) => (
-                        <SelectItem value={country.isoCode} key={country.isoCode}>
+                        <SelectItem value={country.isoCode} key={country.name}>
                           {country.name}
                         </SelectItem>
                       ))}
@@ -188,13 +198,14 @@ export default function OfferForm() {
                       field.onChange(e);
                       setSelectedRegion(e);
                     }}
+                    defaultValue={offer.address.region}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Wybierz województwo..." />
                     </SelectTrigger>
                     <SelectContent>
                       {regions.map((region) => (
-                        <SelectItem value={region.id} key={region.id}>
+                        <SelectItem value={region.id} key={region.name}>
                           {region.name}
                         </SelectItem>
                       ))}
@@ -212,7 +223,7 @@ export default function OfferForm() {
               <FormItem className="w-full text-left">
                 <FormLabel className="font-bold">Miasto</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange}>
+                  <Select onValueChange={field.onChange} defaultValue={offer.address.city}>
                     <SelectTrigger>
                       <SelectValue placeholder="Wybierz miasto..." />
                     </SelectTrigger>
@@ -310,43 +321,8 @@ export default function OfferForm() {
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="thumbnail"
-          render={({ field: { value, onChange, ...fieldProps } }) => (
-            <FormItem>
-              <FormLabel className="font-bold">Miniaturka</FormLabel>
-              <Input
-                {...fieldProps}
-                placeholder="Picture"
-                type="file"
-                accept="image/*, application/pdf"
-                onChange={(event) => onChange(event.target.files && event.target.files[0])}
-              />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="images"
-          render={({ field: { value, onChange, ...fieldProps } }) => (
-            <FormItem>
-              <FormLabel className="font-bold">Zdjęcia</FormLabel>
-              <Input
-                {...fieldProps}
-                placeholder="Picture"
-                type="file"
-                accept="image/*, application/pdf"
-                multiple
-                onChange={(event) => onChange([...Array.from(event.target.files || [])])}
-              />
-            </FormItem>
-          )}
-        />
         <Button type="submit" className="font-bold tracking-wide mt-3 bg-yellow-400 w-full">
-          Opublikuj
+          {form.formState.isSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
         </Button>
       </form>
     </Form>

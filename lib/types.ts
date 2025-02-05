@@ -24,7 +24,7 @@ export type Region = {
 };
 
 export type City = {
-  id: string;
+  cityId: string;
   name: string;
 };
 
@@ -34,6 +34,8 @@ export type OfferRequest = {
   availableFrom: Date;
   rent: number;
   address: {
+    country: string;
+    region: string;
     city: string;
     street: string;
     zipCode: string;
@@ -43,10 +45,6 @@ export type OfferRequest = {
   rooms: number;
   surfaceArea: number;
   floor?: number;
-  // geoLocation: {
-  //   longitude: "string";
-  //   latitude: "string";
-  // };
   thumbnailId: string;
 };
 
@@ -61,8 +59,8 @@ export type Offer = {
   floor: number;
   surfaceArea: number;
   address: {
-    longitude: string;
-    latitude: string;
+    country: string;
+    region: string;
     city: string;
     street: string;
     zipCode: string;
@@ -70,6 +68,7 @@ export type Offer = {
     apartmentNumber: string;
   };
   thumbnailId: string;
+  offerStatus?: string;
 };
 
 export type OfferSearchParameters = {

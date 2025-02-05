@@ -68,7 +68,7 @@ export default function Navbar() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{user.name + " " + user.surname}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link href={"/my-offers"}>Moje oferty</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

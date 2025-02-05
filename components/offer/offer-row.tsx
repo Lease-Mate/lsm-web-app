@@ -7,14 +7,18 @@ import { useRouter } from "next/navigation";
 import { House, LandPlot, MapPinHouse } from "lucide-react";
 import ApiImage from "../api-image";
 import { cn } from "@/lib/utils";
+import { Badge } from "../ui/badge";
+import { getCityNameById } from "@/lib/actions/offer-actions";
 
 type OfferRowProps = {
   offer: Offer;
   className?: string;
+  showBadge?: boolean;
 };
 
-export default function OfferRow({ offer, className }: OfferRowProps) {
+export default function OfferRow({ offer, className, showBadge = false }: OfferRowProps) {
   const [thumbnail, setThumbnail] = useState<string>("");
+  const [cityName, setCityName] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -24,6 +28,15 @@ export default function OfferRow({ offer, className }: OfferRowProps) {
     };
 
     fetchThumbnail();
+  }, []);
+
+  useEffect(() => {
+    const fetchCityName = async () => {
+      const cityName = await getCityNameById(offer.address.city);
+      setCityName(cityName.name);
+    };
+
+    fetchCityName();
   }, []);
 
   return (
@@ -38,7 +51,17 @@ export default function OfferRow({ offer, className }: OfferRowProps) {
       <div className="flex-1 flex flex-col justify-between">
         <div className="flex justify-between gap-10">
           <div className="flex flex-col">
-            <div className="font-bold text-xl">{offer.title}</div>
+            <div className="flex items-center gap-2 ">
+              <div className="font-bold text-xl">{offer.title}</div>
+              {showBadge && (
+                <Badge>
+                  {offer.offerStatus === "PUBLISHED" && "Opublikowane"}
+                  {offer.offerStatus === "UNPAID" && "Nieopłacone"}
+                  {offer.offerStatus === "PAID" && "Opłacone"}
+                </Badge>
+              )}
+            </div>
+
             <div className="line-clamp-3">{offer.description}</div>
           </div>
           <div className="font-bold text-xl whitespace-nowrap">{offer.rent + " zł"}</div>
@@ -55,7 +78,7 @@ export default function OfferRow({ offer, className }: OfferRowProps) {
                 ", " +
                 offer.address.zipCode +
                 " " +
-                offer.address.city}
+                cityName}
             </div>
             <div className="flex items-center gap-2">
               <House size={22} />

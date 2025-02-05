@@ -3,6 +3,7 @@
 import { z } from "zod";
 
 export const offerSchema = z.object({
+  id: z.string().optional(),
   title: z.string().min(1, "Tytuł jest wymagany"),
   description: z.string().min(1, "Opis jest wymagany"),
   availableFrom: z.date().min(new Date(), "Data dostępności musi być w przyszłości"),
@@ -27,3 +28,12 @@ export const offerSchema = z.object({
     .array(z.custom<File>((file) => file instanceof File, "Musisz przesłać plik obrazu"))
     .min(1, "Musisz przesłać przynajmniej jedno zdjęcie"),
 });
+
+export const offerEditSchema = offerSchema
+  .omit({
+    thumbnail: true,
+    images: true,
+  })
+  .extend({
+    availableFrom: z.date(),
+  });

@@ -13,11 +13,9 @@ export default async function createOffer(data: z.infer<typeof offerSchema>) {
 
   const parsedData: OfferRequest = { ...data, thumbnailId: addThumbnailResult.id };
 
-  const editOfferResult = await editOffer(accessToken, createOfferResult.id, parsedData);
+  const editOfferResult = await editOffer(createOfferResult.id, parsedData);
 
-  const publishOfferResponse = await publishOffer(accessToken, createOfferResult.id);
-
-  return publishOfferResponse;
+  return editOfferResult;
 }
 
 export async function createOfferRequest(accessToken: string) {
@@ -80,7 +78,9 @@ export async function changeThumbnail(accessToken: string, offerId: string, file
   return result.json();
 }
 
-export async function editOffer(accessToken: string, offerId: string, data: OfferRequest) {
+export async function editOffer(offerId: string, data: OfferRequest) {
+  const accessToken = await getAccessToken();
+
   const result = await fetch(process.env.OFFERS_API_URL + `/${offerId}`, {
     method: "PUT",
     headers: {
@@ -97,11 +97,8 @@ export async function editOffer(accessToken: string, offerId: string, data: Offe
   return result.json();
 }
 
-export async function publishOffer(accessToken: string, offerId: string) {
-  if (!accessToken) {
-    throw new Error("Brak dostępu");
-  }
-
+export async function publishOffer(offerId: string) {
+  const accessToken = await getAccessToken();
   const result = await fetch(process.env.OFFERS_API_URL + `/${offerId}/publish`, {
     method: "POST",
     headers: {
@@ -166,4 +163,18 @@ export async function deleteOffer(offerId: string) {
   }
 
   return;
+}
+
+export async function getCityNameById(cityId: string) {
+  const result = await fetch(process.env.API_URL + `/offer/dictionary/cities/${cityId}/name`, {
+    headers: {
+      lang: "PL",
+    },
+  });
+
+  if (!result.ok) {
+    throw new Error("Nie udało się pobrać nazwy miasta");
+  }
+
+  return result.json();
 }
