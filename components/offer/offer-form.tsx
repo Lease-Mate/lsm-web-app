@@ -57,7 +57,6 @@ export default function OfferForm() {
 
       const cities = await getSupportedCities(selectedRegion);
       setCities(cities);
-      console.log(cities);
     }
 
     fetchCities();
