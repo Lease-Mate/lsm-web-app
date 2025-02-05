@@ -38,7 +38,7 @@ export default function Navbar() {
             Oferty
           </Link>
           <Link
-            href={"/lease"}
+            href={user ? "/lease" : "/login"}
             className="flex justify-center items-center hover:before:scale-x-100 hover:before:origin-left relative before:w-full before:h-[2px] before:origin-right before:transition-transform before:duration-300 before:scale-x-0 before:bg-gray-900 before:absolute before:left-0 before:bottom-0"
           >
             Wynajmij
@@ -67,6 +67,10 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{user.name + " " + user.surname}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href={"/my-offers"}>Moje oferty</Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Ustawienia</DropdownMenuItem>
               <DropdownMenuItem>Pomoc</DropdownMenuItem>

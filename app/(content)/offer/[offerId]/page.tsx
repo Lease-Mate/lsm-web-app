@@ -1,7 +1,7 @@
 import OfferImageGallery from "@/components/offer/offer-image-gallery";
 import { Button } from "@/components/ui/button";
 import { getImagesByOfferId } from "@/lib/actions/image-actions";
-import { getOfferById } from "@/lib/actions/offer-actions";
+import { getCityNameById, getOfferById } from "@/lib/actions/offer-actions";
 import { Offer } from "@/lib/types";
 import { House, LandPlot, MapPinHouse } from "lucide-react";
 
@@ -9,6 +9,8 @@ export default async function OfferPage({ params }: { params: Promise<{ offerId:
   const offerId = (await params).offerId;
   const offer: Offer = await getOfferById(offerId);
   const images = await getImagesByOfferId(offerId);
+  const cityName = await getCityNameById(offer.address.city);
+
   return (
     <div className="w-[90%] bg-background flex-1 p-5 flex overflow-hidden">
       <div className="flex-1">
@@ -30,7 +32,7 @@ export default async function OfferPage({ params }: { params: Promise<{ offerId:
                 ", " +
                 offer.address.zipCode +
                 " " +
-                offer.address.city}
+                cityName.name}
             </div>
             <div className="flex items-center gap-2">
               <House size={22} />

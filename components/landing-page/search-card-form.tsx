@@ -91,7 +91,7 @@ export default function SearchCardForm() {
             </SelectTrigger>
             <SelectContent>
               {countries.map((country) => (
-                <SelectItem value={country.isoCode} key={country.name}>
+                <SelectItem value={country.isoCode} key={country.isoCode}>
                   {country.name}
                 </SelectItem>
               ))}
@@ -112,7 +112,7 @@ export default function SearchCardForm() {
             </SelectTrigger>
             <SelectContent>
               {regions.map((region) => (
-                <SelectItem value={region.id} key={region.name}>
+                <SelectItem value={region.id} key={region.id}>
                   {region.name}
                 </SelectItem>
               ))}
@@ -133,7 +133,7 @@ export default function SearchCardForm() {
                   </SelectTrigger>
                   <SelectContent>
                     {cities.map((city) => (
-                      <SelectItem value={city.name} key={city.name}>
+                      <SelectItem value={city.cityId} key={city.cityId}>
                         {city.name}
                       </SelectItem>
                     ))}
