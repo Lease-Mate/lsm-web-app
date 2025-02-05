@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { publishOffer } from "@/lib/actions/offer-actions";
+import { payForOffer } from "@/lib/actions/offer-actions";
 import { redirect, useParams } from "next/navigation";
 import { toast } from "sonner";
 
@@ -12,8 +12,7 @@ export default function OfferPaymentPage() {
   }
 
   const handleOfferPayment = async () => {
-    //TODO: change to payment
-    const result = await publishOffer(offerId);
+    const result = await payForOffer(offerId);
     if (!result.error) {
       toast.success("Oferta została opłacona");
       redirect("/my-offers");

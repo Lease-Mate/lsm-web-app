@@ -178,3 +178,19 @@ export async function getCityNameById(cityId: string) {
 
   return result.json();
 }
+
+export async function payForOffer(offerId: string) {
+  const accessToken = await getAccessToken();
+  const result = await fetch(process.env.API_URL + `/offer/${offerId}/pay`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!result.ok) {
+    throw new Error("Nie udało się opłacić oferty");
+  }
+
+  return result.json();
+}
