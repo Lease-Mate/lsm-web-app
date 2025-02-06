@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { deleteOffer, getOffersForUser, publishOffer } from "@/lib/actions/offer-actions";
+import { deleteOffer, getOffersForUser, publishOffer, unpublishOffer } from "@/lib/actions/offer-actions";
 import { Offer } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -70,6 +70,17 @@ export default function MyOffersPage() {
     return;
   };
 
+  const handleOfferUnpublish = async (offerId: string) => {
+    const result = await unpublishOffer(offerId);
+    if (result?.error) {
+      toast.error("Nie udało się wycofać oferty");
+      return;
+    }
+    setOffers(offers.map((offer) => (offer.id === offerId ? { ...offer, offerStatus: "PAID" } : offer)));
+    toast.success("Oferta została wycofana");
+    return;
+  };
+
   return (
     <>
       <div className="w-[90%] bg-background flex-1 p-5 flex flex-col overflow-hidden">
@@ -111,6 +122,16 @@ export default function MyOffersPage() {
                       onClick={() => handleOfferPublish(offer.id)}
                     >
                       Opublikuj
+                    </Button>
+                  )}
+                  {offer.offerStatus === "PUBLISHED" && (
+                    <Button
+                      variant={"outline"}
+                      size="icon"
+                      className="flex-1 w-full"
+                      onClick={() => handleOfferUnpublish(offer.id)}
+                    >
+                      Wycofaj
                     </Button>
                   )}
                   <AlertDialog>

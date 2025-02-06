@@ -113,6 +113,22 @@ export async function publishOffer(offerId: string) {
   return result.json();
 }
 
+export async function unpublishOffer(offerId: string) {
+  const accessToken = await getAccessToken();
+  const result = await fetch(process.env.OFFERS_API_URL + `/${offerId}/unpublish`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!result.ok) {
+    throw new Error("Nie udało się cofnąć publikacji oferty");
+  }
+
+  return result.json();
+}
+
 export async function getOffersByParameters(params: OfferSearchParameters) {
   const queryParams = new URLSearchParams(params as Record<string, string>).toString();
   const result = await fetch(process.env.OFFERS_API_URL + "/available/search" + `?${new URLSearchParams(queryParams)}`);
