@@ -1,3 +1,4 @@
+import { RequestLeaseDialog } from "@/components/lease/request-lease-dialog";
 import OfferImageGallery from "@/components/offer/offer-image-gallery";
 import { Button } from "@/components/ui/button";
 import { getImagesByOfferId } from "@/lib/actions/image-actions";
@@ -56,7 +57,7 @@ export default async function OfferPage({ params }: { params: Promise<{ offerId:
         </div>
         <div className="mt-auto flex flex-col gap-5 h-1/5 justify-end">
           <Button className="w-full font-semibold">Umów się na oględziny</Button>
-          <Button className="w-full font-semibold">Wynajmij to mieszkanie</Button>
+          <RequestLeaseDialog offerId={offerId} />
         </div>
       </div>
     </div>

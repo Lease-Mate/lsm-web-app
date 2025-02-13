@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function login(data: LoginRequest) {
-  const response = await fetch(process.env.USER_API_URL + "/auth/login", {
+  const response = await fetch(`${process.env.API_URL}/user/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -24,7 +24,7 @@ export async function login(data: LoginRequest) {
 
 export async function register(data: RegisterRequest) {
   const requestData = { ...data, dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd") };
-  const response = await fetch(process.env.USER_API_URL + "/auth/register", {
+  const response = await fetch(`${process.env.API_URL}/user/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -43,7 +43,7 @@ export async function register(data: RegisterRequest) {
 export async function logout() {
   const jwt = (await cookies()).get("accessToken");
   if (!jwt) return;
-  await fetch(process.env.USER_API_URL + "/auth/logout", {
+  await fetch(`${process.env.API_URL}/auth/logout`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -54,7 +54,7 @@ export async function logout() {
 }
 
 export async function getUserByToken(jwt: string) {
-  const response = await fetch(process.env.USER_API_URL + "/info", {
+  const response = await fetch(`${process.env.API_URL}/user/info`, {
     headers: {
       Authorization: `Bearer ${jwt}`,
     },
@@ -78,4 +78,14 @@ export async function getAccessToken() {
     throw new Error("Brak dostępu");
   }
   return accessToken.value;
+}
+
+export async function getUserById(userId: string) {
+  const accessToken = await getAccessToken();
+  const response = await fetch(`${process.env.API_URL}/user/${userId}/info`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return response.json();
 }

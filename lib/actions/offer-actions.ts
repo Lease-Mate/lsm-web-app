@@ -19,7 +19,7 @@ export default async function createOffer(data: z.infer<typeof offerSchema>) {
 }
 
 export async function createOfferRequest(accessToken: string) {
-  const result = await fetch(process.env.OFFERS_API_URL, {
+  const result = await fetch(`${process.env.API_URL}/offer`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export async function addImagesToOffer(images: File[], offerId: string, accessTo
     const formData = new FormData();
     formData.append("file", image);
 
-    const result = await fetch(process.env.FILE_API_URL + `/image/offer/${offerId}/add`, {
+    const result = await fetch(`${process.env.API_URL}/file/image/offer/${offerId}/add`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -63,7 +63,7 @@ export async function changeThumbnail(accessToken: string, offerId: string, file
   const formData = new FormData();
   formData.append("file", file);
 
-  const result = await fetch(process.env.FILE_API_URL + `/image/offer/${offerId}/add`, {
+  const result = await fetch(`${process.env.API_URL}/file/image/offer/${offerId}/add`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -81,7 +81,7 @@ export async function changeThumbnail(accessToken: string, offerId: string, file
 export async function editOffer(offerId: string, data: OfferRequest) {
   const accessToken = await getAccessToken();
 
-  const result = await fetch(process.env.OFFERS_API_URL + `/${offerId}`, {
+  const result = await fetch(`${process.env.API_URL}/offer/${offerId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -99,7 +99,7 @@ export async function editOffer(offerId: string, data: OfferRequest) {
 
 export async function publishOffer(offerId: string) {
   const accessToken = await getAccessToken();
-  const result = await fetch(process.env.OFFERS_API_URL + `/${offerId}/publish`, {
+  const result = await fetch(`${process.env.API_URL}/offer/${offerId}/publish`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -115,7 +115,7 @@ export async function publishOffer(offerId: string) {
 
 export async function unpublishOffer(offerId: string) {
   const accessToken = await getAccessToken();
-  const result = await fetch(process.env.OFFERS_API_URL + `/${offerId}/unpublish`, {
+  const result = await fetch(`${process.env.API_URL}/offer/${offerId}/unpublish`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -131,7 +131,7 @@ export async function unpublishOffer(offerId: string) {
 
 export async function getOffersByParameters(params: OfferSearchParameters) {
   const queryParams = new URLSearchParams(params as Record<string, string>).toString();
-  const result = await fetch(process.env.OFFERS_API_URL + "/available/search" + `?${new URLSearchParams(queryParams)}`);
+  const result = await fetch(`${process.env.API_URL}/offer/available/search?${new URLSearchParams(queryParams)}`);
 
   if (!result.ok) {
     throw new Error("Nie udało się pobrać ofert");
@@ -141,7 +141,7 @@ export async function getOffersByParameters(params: OfferSearchParameters) {
 }
 
 export async function getOfferById(offerId: string) {
-  const result = await fetch(process.env.API_URL + `/offer/internal/${offerId}`);
+  const result = await fetch(`${process.env.API_URL}/offer/internal/${offerId}`);
 
   if (!result.ok) {
     throw new Error("Nie udało się pobrać oferty");
@@ -152,7 +152,7 @@ export async function getOfferById(offerId: string) {
 
 export async function getOffersForUser() {
   const accessToken = await getAccessToken();
-  const result = await fetch(process.env.OFFERS_API_URL + "/user/search", {
+  const result = await fetch(`${process.env.API_URL}/offer/user/search`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -167,7 +167,7 @@ export async function getOffersForUser() {
 
 export async function deleteOffer(offerId: string) {
   const accessToken = await getAccessToken();
-  const result = await fetch(process.env.OFFERS_API_URL + `/${offerId}`, {
+  const result = await fetch(`${process.env.API_URL}/offer/${offerId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -182,7 +182,7 @@ export async function deleteOffer(offerId: string) {
 }
 
 export async function getCityNameById(cityId: string) {
-  const result = await fetch(process.env.API_URL + `/offer/dictionary/cities/${cityId}/name`, {
+  const result = await fetch(`${process.env.API_URL}/offer/dictionary/cities/${cityId}/name`, {
     headers: {
       lang: "PL",
     },
@@ -197,7 +197,7 @@ export async function getCityNameById(cityId: string) {
 
 export async function payForOffer(offerId: string) {
   const accessToken = await getAccessToken();
-  const result = await fetch(process.env.API_URL + `/offer/${offerId}/pay`, {
+  const result = await fetch(`${process.env.API_URL}/offer/${offerId}/pay`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,

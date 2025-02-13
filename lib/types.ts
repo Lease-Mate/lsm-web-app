@@ -79,3 +79,13 @@ export type OfferSearchParameters = {
   surfaceAreaFrom?: number;
   surfaceAreaTo?: number;
 };
+
+export type RentRequest = {
+  id: string;
+  ownerId: string;
+  offerId: string;
+  userId: string;
+  requestDate: string;
+  status: "REQUESTED" | "REJECTED_REQUEST";
+  requested: boolean;
+};

@@ -157,7 +157,7 @@ export default function MyOffersPage() {
           ) : (
             <p className="flex-1 flex justify-center items-center p-10 text-2xl text-center flex-col">
               Nie utworzyłeś jeszcze żadnej ofert.{" "}
-              <Link href={"/lease"}>
+              <Link href={"/offer/create"}>
                 <Button variant={"link"} className="text-2xl">
                   Utworz teraz!
                 </Button>
