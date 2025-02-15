@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   acceptRentAsk,
-  getOwnerRequests,
-  getUserRequests,
+  getOwnerRentRequests,
+  getUserRentRequests,
   rejectRentAsk,
   revokeRentRequest,
 } from "@/lib/actions/lease-actions";
@@ -18,44 +18,45 @@ import { RentRequest } from "@/lib/types";
 import { toast } from "sonner";
 
 export default function OfferRentAskPage() {
-  const [userRentWithDetails, setUserRentWithDetails] = useState([]);
-  const [ownerRentWithDetails, setOwnerRentWithDetails] = useState([]);
+  const [userRentWithDetails, setUserRentAsksWithDetails] = useState([]);
+  const [ownerRentAsksWithDetails, setOwnerRentAsksWithDetails] = useState([]);
 
-  const fetchUserRents = async () => {
-    const userRents = await getUserRequests();
-    const userRentWithDetails = await Promise.all(
-      userRents.map(async (rent: RentRequest) => {
+  const fetchUserRentAsks = async () => {
+    const userRentAsks = await getUserRentRequests();
+    const userRentAsksWithDetails = await Promise.all(
+      userRentAsks.map(async (rent: RentRequest) => {
         const offerDetails = await getOfferById(rent.offerId);
         return { ...rent, offerDetails };
       })
     );
-    setUserRentWithDetails(userRentWithDetails);
+
+    setUserRentAsksWithDetails(userRentAsksWithDetails);
   };
 
-  const fetchOwnerRents = async () => {
-    const ownerRents = await getOwnerRequests();
-    const ownerRentWithDetails = await Promise.all(
-      ownerRents.map(async (rent: RentRequest) => {
+  const fetchOwnerRentAsks = async () => {
+    const ownerRentAsks = await getOwnerRentRequests();
+    const ownerRentAsksWithDetails = await Promise.all(
+      ownerRentAsks.map(async (rent: RentRequest) => {
         const userDetails = await getUserById(rent.userId);
         const offerDetails = await getOfferById(rent.offerId);
         return { ...rent, offerDetails, userDetails };
       })
     );
-    setOwnerRentWithDetails(ownerRentWithDetails);
+    setOwnerRentAsksWithDetails(ownerRentAsksWithDetails);
   };
 
   useEffect(() => {
-    fetchUserRents();
-    fetchOwnerRents();
+    fetchUserRentAsks();
+    fetchOwnerRentAsks();
   }, []);
 
   const handleAcceptRentAsk = async (offerId: string, rentId: string) => {
     try {
       await acceptRentAsk(offerId, rentId);
       toast.success("Pomyślnie zaakceptowano zapytanie o wynajem");
-      fetchOwnerRents();
+      fetchOwnerRentAsks();
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message);
     }
   };
 
@@ -63,9 +64,9 @@ export default function OfferRentAskPage() {
     try {
       await rejectRentAsk(offerId, rentId);
       toast.success("Pomyślnie odrzucono zapytanie o wynajem");
-      fetchOwnerRents();
+      fetchOwnerRentAsks();
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message);
     }
   };
 
@@ -73,7 +74,7 @@ export default function OfferRentAskPage() {
     try {
       await revokeRentRequest(rentId);
       toast.success("Pomyślnie anulowano zapytanie o wynajem");
-      fetchUserRents();
+      fetchUserRentAsks();
     } catch (error) {
       toast.error(error.message);
     }
@@ -103,10 +104,10 @@ export default function OfferRentAskPage() {
             <TableBody>
               {userRentWithDetails.map((item) => (
                 <TableRow key={item.id}>
-                  <TableHead>{new Date(item.requestDate).toLocaleString()}</TableHead>
-                  <TableHead>{item.offerDetails.title}</TableHead>
-                  <TableHead>{item.status === "REQUESTED" ? "Wysłano" : "Odrzucono"}</TableHead>
-                  <TableHead>
+                  <TableCell>{new Date(item.requestDate).toLocaleString()}</TableCell>
+                  <TableCell>{item.offerDetails.title}</TableCell>
+                  <TableCell>{item.status === "REQUESTED" ? "Wysłano" : "Odrzucono"}</TableCell>
+                  <TableCell>
                     {item.status === "REQUESTED" ? (
                       <form
                         onSubmit={(e) => {
@@ -130,7 +131,7 @@ export default function OfferRentAskPage() {
                         </Button>
                       </form>
                     )}
-                  </TableHead>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -150,19 +151,19 @@ export default function OfferRentAskPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {ownerRentWithDetails.map((item) => (
+              {ownerRentAsksWithDetails.map((item) => (
                 <TableRow key={item.id}>
-                  <TableHead>{item.userDetails.name}</TableHead>
-                  <TableHead>{item.userDetails.surname}</TableHead>
-                  <TableHead>
+                  <TableCell>{item.userDetails.name}</TableCell>
+                  <TableCell>{item.userDetails.surname}</TableCell>
+                  <TableCell>
                     {new Date().getFullYear() - new Date(item.userDetails.dateOfBirth).getFullYear()}
-                  </TableHead>
-                  <TableHead>{new Date(item.requestDate).toLocaleString()}</TableHead>
-                  <TableHead>
+                  </TableCell>
+                  <TableCell>{new Date(item.requestDate).toLocaleString()}</TableCell>
+                  <TableCell>
                     <div className="line-clamp-1 overflow-hidden text-ellipsis">{item.offerDetails.title}</div>
-                  </TableHead>
-                  <TableHead>{item.status === "REQUESTED" ? "Wysłano" : "Odrzucono"}</TableHead>
-                  <TableHead className="flex items-center gap-2">
+                  </TableCell>
+                  <TableCell>{item.status === "REQUESTED" ? "Wysłano" : "Odrzucono"}</TableCell>
+                  <TableCell className="flex items-center gap-2">
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
@@ -186,7 +187,7 @@ export default function OfferRentAskPage() {
                         <X strokeWidth={3} />
                       </Button>
                     </form>
-                  </TableHead>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -71,8 +71,12 @@ export default function Navbar() {
               <DropdownMenuItem asChild>
                 <Link href={"/my-offers"}>Moje oferty</Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href={"/offer/rent/ask"}>Zapytania</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={"/offer/rents"}>Wynajmy</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Ustawienia</DropdownMenuItem>
