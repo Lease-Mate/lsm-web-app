@@ -32,14 +32,14 @@ export function RegisterForm() {
   });
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
-    const result = await register(values);
-    if (result.error) {
-      form.setError("root", { type: "custom", message: result.error });
+    try {
+      await register(values);
+      toast.success("Zarejestrowano pomyślnie!");
+      router.replace("/");
+    } catch (error) {
+      form.setError("root", { type: "custom", message: error.message });
       toast.error("Rejestracja nie powiodła się. Spróbuj ponownie.");
-      return;
     }
-    toast.success("Rejestracja zakończona pomyślnie");
-    router.replace("/");
   }
 
   return (

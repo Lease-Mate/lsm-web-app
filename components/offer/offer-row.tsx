@@ -1,14 +1,14 @@
 "use client";
 
-import { getThumbnailById } from "@/lib/actions/image-actions";
-import { Offer } from "@/lib/types";
+import { getImageById } from "@/lib/actions/image-actions";
+import { Offer } from "@/lib/types/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { House, LandPlot, MapPinHouse } from "lucide-react";
 import ApiImage from "../api-image";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
-import { getCityNameById } from "@/lib/actions/offer-actions";
+import { getCityNameById } from "@/lib/actions/geo-actions";
 
 type OfferRowProps = {
   offer: Offer;
@@ -23,12 +23,12 @@ export default function OfferRow({ offer, className, showBadge = false }: OfferR
 
   useEffect(() => {
     const fetchThumbnail = async () => {
-      const thumbnail = await getThumbnailById(offer.thumbnailId);
+      const thumbnail = await getImageById(offer.thumbnailId);
       setThumbnail(thumbnail);
     };
 
     fetchThumbnail();
-  }, []);
+  }, [offer]);
 
   useEffect(() => {
     const fetchCityName = async () => {
@@ -37,7 +37,7 @@ export default function OfferRow({ offer, className, showBadge = false }: OfferR
     };
 
     fetchCityName();
-  }, []);
+  }, [offer]);
 
   return (
     <div

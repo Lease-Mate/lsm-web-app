@@ -1,20 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/contexts/auth-context";
 import { getRentById, getRentPayments } from "@/lib/actions/lease-actions";
 import { getOfferById } from "@/lib/actions/offer-actions";
-import { Offer } from "@/lib/types";
+import { Offer, Payment, Rent } from "@/lib/types/types";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function RentPaymentsPage() {
-  const rentId = useParams().rentId;
+  const rentId = useParams().rentId as string;
   const { user } = useAuth();
-  const [rentPayments, setRentPayments] = useState([]);
-  const [rent, setRent] = useState();
+  const [rentPayments, setRentPayments] = useState<Payment[]>([]);
+  const [rent, setRent] = useState<Rent>();
   const [role, setRole] = useState<"user" | "owner">();
   const [offer, setOffer] = useState<Offer>();
 

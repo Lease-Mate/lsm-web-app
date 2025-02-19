@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function PayRentPage() {
-  const paymentId = useParams().paymentId;
+  const paymentId = useParams().paymentId as string;
   const rentId = useParams().rentId;
   const router = useRouter();
 

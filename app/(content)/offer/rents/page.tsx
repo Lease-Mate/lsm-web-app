@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getOwnerRents, getRentPayments, getUserRents } from "@/lib/actions/lease-actions";
 import { getOfferById } from "@/lib/actions/offer-actions";
 import { getUserById } from "@/lib/actions/user-actions";
-import { RentRequest } from "@/lib/types";
+import { RentRequest } from "@/lib/types/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 

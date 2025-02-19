@@ -6,7 +6,8 @@ import { redirect, useParams } from "next/navigation";
 import { toast } from "sonner";
 
 export default function OfferPaymentPage() {
-  const offerId = useParams().offerId;
+  const offerId = useParams().offerId as string;
+
   if (!offerId) {
     redirect("/my-offers");
   }

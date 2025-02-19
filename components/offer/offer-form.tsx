@@ -1,8 +1,8 @@
 "use client";
 
-import { getSupportedCities, getSupportedCountries, getSupportedRegions } from "@/lib/actions/search-actions";
+import { getSupportedCities, getSupportedCountries, getSupportedRegions } from "@/lib/actions/geo-actions";
 import { offerSchema } from "@/lib/schemas/offerSchema";
-import { City, Country, Region } from "@/lib/types";
+import { City, Country, Region } from "@/lib/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";

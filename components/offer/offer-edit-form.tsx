@@ -1,8 +1,8 @@
 "use client";
 
-import { getSupportedCities, getSupportedCountries, getSupportedRegions } from "@/lib/actions/search-actions";
+import { getSupportedCities, getSupportedCountries, getSupportedRegions } from "@/lib/actions/geo-actions";
 import { offerEditSchema, offerSchema } from "@/lib/schemas/offerSchema";
-import { City, Country, Region } from "@/lib/types";
+import { City, Country, Region } from "@/lib/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -46,7 +46,7 @@ export default function OfferEditForm({ offer }: OfferFormProps) {
     if (offer) {
       setSelectedCountry(offer.address.country);
     }
-  }, []);
+  }, [offer]);
 
   useEffect(() => {
     async function fetchRegions() {
@@ -60,7 +60,7 @@ export default function OfferEditForm({ offer }: OfferFormProps) {
     if (offer) {
       setSelectedRegion(offer.address.region);
     }
-  }, [selectedCountry]);
+  }, [offer, selectedCountry]);
 
   useEffect(() => {
     async function fetchCities() {
