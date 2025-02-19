@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Bath, Bed, ChevronLeft, ChevronRight, LandPlot } from "lucide-react";
