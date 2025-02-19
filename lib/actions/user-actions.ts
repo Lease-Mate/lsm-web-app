@@ -1,91 +1,141 @@
 "use server";
 
 import { format } from "date-fns";
-import { LoginRequest, RegisterRequest } from "../types";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { fetchWrapper } from "./fetch-wrapper";
+import { AuthResponse } from "../types/responses";
+import { LoginRequest, RegisterRequest } from "../types/requests";
+import { User } from "../types/types";
 
-export async function login(data: LoginRequest) {
-  const response = await fetch(`${process.env.API_URL}/user/auth/login`, {
+export async function login(data: LoginRequest): Promise<AuthResponse> {
+  const loginResult = await fetchWrapper<AuthResponse>("/user/auth/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(data),
+    errorMessage: "Nie poprawny email lub hasło.",
+    auth: false,
   });
-  const loginResult = await response.json();
-  if (response.ok && loginResult.accessToken) {
+
+  if (loginResult.accessToken && loginResult.refreshToken) {
     (await cookies()).set("accessToken", loginResult.accessToken, {
       httpOnly: true,
     });
-  }
-  return loginResult;
-}
-
-export async function register(data: RegisterRequest) {
-  const requestData = { ...data, dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd") };
-  const response = await fetch(`${process.env.API_URL}/user/auth/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  });
-  const registerResult = await response.json();
-  if (response.ok && registerResult.accessToken) {
-    (await cookies()).set("accessToken", registerResult.accessToken, {
+    (await cookies()).set("refreshToken", loginResult.refreshToken, {
       httpOnly: true,
     });
   }
+
+  return loginResult;
+}
+
+export async function register(data: RegisterRequest): Promise<AuthResponse> {
+  const requestData = { ...data, dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd") };
+
+  const registerResult = await fetchWrapper<AuthResponse>("/user/auth/register", {
+    method: "POST",
+    body: JSON.stringify(requestData),
+    errorMessage: "Rejestracja nie powiodła się.",
+    auth: false,
+  });
+
+  if (registerResult.accessToken && registerResult.refreshToken) {
+    (await cookies()).set("accessToken", registerResult.accessToken, {
+      httpOnly: true,
+    });
+    (await cookies()).set("refreshToken", registerResult.refreshToken, {
+      httpOnly: true,
+    });
+  }
+
   return registerResult;
 }
 
-export async function logout() {
-  const jwt = (await cookies()).get("accessToken");
-  if (!jwt) return;
-  await fetch(`${process.env.API_URL}/auth/logout`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-  (await cookies()).delete("accessToken");
+export async function logout(): Promise<void> {
+  const token = (await cookies()).get("accessToken")?.value;
+  if (!token) return;
+
+  try {
+    await fetchWrapper("/user/auth/logout", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      auth: true,
+    });
+  } catch (error) {
+    console.warn(error);
+  }
+
+  await removeAuthTokens();
   redirect("/");
 }
 
-export async function getUserByToken(jwt: string) {
-  const response = await fetch(`${process.env.API_URL}/user/info`, {
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-  return response.json();
-}
-
-export async function getCurrentUser() {
-  const accessToken = (await cookies()).get("accessToken");
-
-  if (!accessToken) return null;
-
-  const user = await getUserByToken(accessToken.value);
-
-  return user.error ? null : user;
-}
-
-export async function getAccessToken() {
-  const accessToken = (await cookies()).get("accessToken");
-  if (!accessToken) {
-    throw new Error("Brak dostępu");
-  }
-  return accessToken.value;
-}
-
-export async function getUserById(userId: string) {
+export async function getCurrentUser(): Promise<User | null> {
   const accessToken = await getAccessToken();
-  const response = await fetch(`${process.env.API_URL}/user/${userId}/info`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+  let userResult = null;
+
+  if (accessToken) {
+    userResult = await fetchWrapper<User>("/user/info", {
+      auth: true,
+    });
+  }
+
+  return userResult;
+}
+
+export async function getAccessToken(): Promise<string> {
+  const accessToken = (await cookies()).get("accessToken")?.value;
+
+  if (!accessToken) {
+    throw new Error("Użytkownik nie zalogowany.");
+  }
+
+  return accessToken;
+}
+
+export async function removeAuthTokens() {
+  (await cookies()).delete("accessToken");
+  (await cookies()).delete("refreshToken");
+}
+
+export async function refreshAccessToken(): Promise<AuthResponse> {
+  const refreshToken = (await cookies()).get("refreshToken")?.value;
+
+  if (!refreshToken) {
+    throw new Error("Brak tokenu odświeżającego.");
+  }
+
+  try {
+    const refreshResponse = await fetchWrapper<AuthResponse>("/user/auth/refresh", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+      },
+      auth: false,
+      errorMessage: "Nie udało się odświeżyć sesji.",
+      isRefreshRequest: true,
+    });
+
+    (await cookies()).set("accessToken", refreshResponse.accessToken, {
+      httpOnly: true,
+    });
+    (await cookies()).set("refreshToken", refreshResponse.refreshToken, {
+      httpOnly: true,
+    });
+
+    return refreshResponse;
+  } catch (error) {
+    console.warn(error);
+    await removeAuthTokens();
+    throw new Error("Nie udało się odświeżyć sesji.");
+  }
+}
+
+export async function getUserById(userId: string): Promise<User> {
+  const response = await fetchWrapper<User>(`/user/${userId}/info`, {
+    auth: true,
+    errorMessage: "Nie znaleziono użytkownika.",
   });
-  return response.json();
+
+  return response;
 }

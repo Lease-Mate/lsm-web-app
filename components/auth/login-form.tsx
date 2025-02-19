@@ -23,14 +23,14 @@ export function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    const loginResult = await login(values);
-    if (loginResult.error) {
-      form.setError("root", { type: "custom", message: loginResult.error });
+    try {
+      await login(values);
+      toast.success("Zalogowano pomyślnie");
+      router.replace("/");
+    } catch (error) {
+      form.setError("root", { type: "custom", message: error.message });
       toast.error("Logowanie nie powiodło się. Spróbuj ponownie.");
-      return;
     }
-    toast.success("Zalogowano pomyślnie");
-    router.replace("/");
   }
 
   return (

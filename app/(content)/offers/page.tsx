@@ -5,7 +5,7 @@ import OfferRow from "@/components/offer/offer-row";
 import { SortByButton } from "@/components/offer/sort-by-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getOffersByParameters } from "@/lib/actions/offer-actions";
-import { Offer } from "@/lib/types";
+import { Offer } from "@/lib/types/types";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 

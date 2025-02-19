@@ -14,7 +14,6 @@ import {
 import { getUserById } from "@/lib/actions/user-actions";
 import { Check, Undo2, X } from "lucide-react";
 import { getOfferById } from "@/lib/actions/offer-actions";
-import { RentRequest } from "@/lib/types";
 import { toast } from "sonner";
 
 export default function OfferRentAskPage() {
@@ -24,7 +23,7 @@ export default function OfferRentAskPage() {
   const fetchUserRentAsks = async () => {
     const userRentAsks = await getUserRentRequests();
     const userRentAsksWithDetails = await Promise.all(
-      userRentAsks.map(async (rent: RentRequest) => {
+      userRentAsks.map(async (rent) => {
         const offerDetails = await getOfferById(rent.offerId);
         return { ...rent, offerDetails };
       })
@@ -36,7 +35,7 @@ export default function OfferRentAskPage() {
   const fetchOwnerRentAsks = async () => {
     const ownerRentAsks = await getOwnerRentRequests();
     const ownerRentAsksWithDetails = await Promise.all(
-      ownerRentAsks.map(async (rent: RentRequest) => {
+      ownerRentAsks.map(async (rent) => {
         const userDetails = await getUserById(rent.userId);
         const offerDetails = await getOfferById(rent.offerId);
         return { ...rent, offerDetails, userDetails };

@@ -4,7 +4,13 @@ import { getCurrentUser } from "@/lib/actions/user-actions";
 import { ReactNode } from "react";
 
 export default async function ContentLayout({ children }: { children: ReactNode }) {
-  const user = await getCurrentUser();
+  let user = null;
+
+  try {
+    user = await getCurrentUser();
+  } catch (error) {
+    console.warn(error);
+  }
 
   return (
     <AuthContextProvider currentUser={user}>

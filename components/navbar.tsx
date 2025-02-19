@@ -18,11 +18,12 @@ import Logo from "./logo";
 import { toast } from "sonner";
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleLogout = async () => {
     toast.success("Wylogowano pomyślnie");
+    setUser(null);
     await logout();
   };
 

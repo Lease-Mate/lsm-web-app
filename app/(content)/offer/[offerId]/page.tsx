@@ -1,14 +1,14 @@
 import { RequestLeaseDialog } from "@/components/lease/request-lease-dialog";
 import OfferImageGallery from "@/components/offer/offer-image-gallery";
 import { Button } from "@/components/ui/button";
+import { getCityNameById } from "@/lib/actions/geo-actions";
 import { getImagesByOfferId } from "@/lib/actions/image-actions";
-import { getCityNameById, getOfferById } from "@/lib/actions/offer-actions";
-import { Offer } from "@/lib/types";
+import { getOfferById } from "@/lib/actions/offer-actions";
 import { House, LandPlot, MapPinHouse } from "lucide-react";
 
 export default async function OfferPage({ params }: { params: Promise<{ offerId: string }> }) {
   const offerId = (await params).offerId;
-  const offer: Offer = await getOfferById(offerId);
+  const offer = await getOfferById(offerId);
   const images = await getImagesByOfferId(offerId);
   const cityName = await getCityNameById(offer.address.city);
 

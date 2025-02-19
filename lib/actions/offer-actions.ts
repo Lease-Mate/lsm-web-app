@@ -2,14 +2,17 @@
 
 import { z } from "zod";
 import { offerSchema } from "../schemas/offerSchema";
-import { OfferRequest, OfferSearchParameters } from "../types";
-import { getAccessToken } from "./user-actions";
+import { IdResponse } from "../types/responses";
+import { fetchWrapper } from "./fetch-wrapper";
+import { OfferRequest, OfferSearchParameters } from "../types/requests";
+import { Offer } from "../types/types";
 
-export default async function createOffer(data: z.infer<typeof offerSchema>) {
-  const accessToken = await getAccessToken();
-  const createOfferResult = await createOfferRequest(accessToken);
-  const addThumbnailResult = await changeThumbnail(accessToken, createOfferResult.id, data.thumbnail);
-  const addImagesToOfferResult = await addImagesToOffer(data.images, createOfferResult.id, accessToken);
+export default async function createOffer(data: z.infer<typeof offerSchema>): Promise<Offer> {
+  const createOfferResult = await createOfferRequest();
+
+  const addThumbnailResult = await changeThumbnail(createOfferResult.id, data.thumbnail);
+
+  await addImagesToOffer(data.images, createOfferResult.id);
 
   const parsedData: OfferRequest = { ...data, thumbnailId: addThumbnailResult.id };
 
@@ -18,44 +21,35 @@ export default async function createOffer(data: z.infer<typeof offerSchema>) {
   return editOfferResult;
 }
 
-export async function createOfferRequest(accessToken: string) {
-  const result = await fetch(`${process.env.API_URL}/offer`, {
+export async function createOfferRequest(): Promise<IdResponse> {
+  const result = await fetchWrapper<IdResponse>("/lease/offer/create", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
+    auth: true,
+    errorMessage: "Nie udało się utworzyć oferty",
   });
 
-  if (!result.ok) {
-    throw new Error("Nie udało się utworzyć oferty");
-  }
-
-  return result.json();
+  return result;
 }
 
-export async function addImagesToOffer(images: File[], offerId: string, accessToken: string) {
+export async function addImagesToOffer(images: File[], offerId: string): Promise<IdResponse[]> {
   const promises = images.map(async (image) => {
     const formData = new FormData();
     formData.append("file", image);
 
-    const result = await fetch(`${process.env.API_URL}/file/image/offer/${offerId}/add`, {
+    const result = await fetchWrapper<IdResponse>(`/file/image/offer/${offerId}/add`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      auth: true,
       body: formData,
+      errorMessage: "Nie udało się dodać zdjęcia do oferty",
     });
-    if (!result.ok) {
-      throw new Error("Nie udało się dodać obrazu");
-    }
-    return await result.json();
+
+    return await result;
   });
 
   return Promise.all(promises);
 }
 
-export async function changeThumbnail(accessToken: string, offerId: string, file?: File) {
+export async function changeThumbnail(offerId: string, file?: File): Promise<IdResponse> {
   if (!file) {
     throw new Error("Brak pliku");
   }
@@ -63,150 +57,90 @@ export async function changeThumbnail(accessToken: string, offerId: string, file
   const formData = new FormData();
   formData.append("file", file);
 
-  const result = await fetch(`${process.env.API_URL}/file/image/offer/${offerId}/add`, {
+  const result = await fetchWrapper<IdResponse>(`/file/image/offer/${offerId}/add`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    auth: true,
     body: formData,
+    errorMessage: "Nie udało się dodać zdjęcia do oferty",
   });
 
-  if (!result.ok) {
-    throw new Error("Nie udało się dodać obrazu");
-  }
-
-  return result.json();
+  return result;
 }
 
-export async function editOffer(offerId: string, data: OfferRequest) {
-  const accessToken = await getAccessToken();
-
-  const result = await fetch(`${process.env.API_URL}/offer/${offerId}`, {
+export async function editOffer(offerId: string, data: OfferRequest): Promise<Offer> {
+  const result = await fetchWrapper<Offer>(`/lease/offer/${offerId}/update`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
+    auth: true,
     body: JSON.stringify(data),
+    errorMessage: "Nie udało się edytować oferty",
   });
 
-  if (!result.ok) {
-    throw new Error("Nie udało się edytować oferty");
-  }
-
-  return result.json();
+  return result;
 }
 
-export async function publishOffer(offerId: string) {
-  const accessToken = await getAccessToken();
-  const result = await fetch(`${process.env.API_URL}/offer/${offerId}/publish`, {
+export async function publishOffer(offerId: string): Promise<Offer> {
+  const result = await fetchWrapper<Offer>(`/lease/offer/${offerId}/publish`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    auth: true,
+    errorMessage: "Nie udało się opublikować oferty",
   });
 
-  if (!result.ok) {
-    throw new Error("Nie udało się opublikować oferty");
-  }
-
-  return result.json();
+  return result;
 }
 
-export async function unpublishOffer(offerId: string) {
-  const accessToken = await getAccessToken();
-  const result = await fetch(`${process.env.API_URL}/offer/${offerId}/unpublish`, {
+export async function unpublishOffer(offerId: string): Promise<Offer> {
+  const result = await fetchWrapper<Offer>(`/lease/offer/${offerId}/unpublish`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    auth: true,
+    errorMessage: "Nie udało się cofnąć publikacji oferty",
   });
 
-  if (!result.ok) {
-    throw new Error("Nie udało się cofnąć publikacji oferty");
-  }
-
-  return result.json();
+  return result;
 }
 
-export async function getOffersByParameters(params: OfferSearchParameters) {
+export async function getOffersByParameters(params: OfferSearchParameters): Promise<Offer[]> {
   const queryParams = new URLSearchParams(params as Record<string, string>).toString();
-  const result = await fetch(`${process.env.API_URL}/offer/available/search?${new URLSearchParams(queryParams)}`);
-
-  if (!result.ok) {
-    throw new Error("Nie udało się pobrać ofert");
-  }
-
-  return result.json();
-}
-
-export async function getOfferById(offerId: string) {
-  const result = await fetch(`${process.env.API_URL}/offer/internal/${offerId}`);
-
-  if (!result.ok) {
-    throw new Error("Nie udało się pobrać oferty");
-  }
-
-  return result.json();
-}
-
-export async function getOffersForUser() {
-  const accessToken = await getAccessToken();
-  const result = await fetch(`${process.env.API_URL}/offer/user/search`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+  console.log(queryParams);
+  const result = await fetchWrapper<Offer[]>(`/lease/offer/available/search?${new URLSearchParams(queryParams)}`, {
+    auth: false,
+    errorMessage: "Nie udało się pobrać ofert",
   });
 
-  if (!result.ok) {
-    throw new Error("Nie udało się pobrać ofert");
-  }
-
-  return result.json();
+  return result;
 }
 
-export async function deleteOffer(offerId: string) {
-  const accessToken = await getAccessToken();
-  const result = await fetch(`${process.env.API_URL}/offer/${offerId}`, {
+export async function getOfferById(offerId: string): Promise<Offer> {
+  const result = await fetchWrapper<Offer>(`/lease/offer/${offerId}`, {
+    auth: false,
+    errorMessage: "Nie udało się pobrać oferty",
+  });
+
+  return result;
+}
+
+export async function getOffersForUser(): Promise<Offer[]> {
+  const result = await fetchWrapper<Offer[]>(`/lease/offer/user/search`, {
+    auth: true,
+    errorMessage: "Nie udało się pobrać ofert",
+  });
+
+  return result;
+}
+
+export async function deleteOffer(offerId: string): Promise<void> {
+  await fetchWrapper<void>(`/lease/offer/${offerId}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    auth: true,
+    errorMessage: "Nie udało się usunąć oferty",
   });
-
-  if (!result.ok) {
-    return { error: "Nie udało się usunąć oferty." };
-  }
-
-  return;
 }
 
-export async function getCityNameById(cityId: string) {
-  const result = await fetch(`${process.env.API_URL}/offer/dictionary/cities/${cityId}/name`, {
-    headers: {
-      lang: "PL",
-    },
-  });
-
-  if (!result.ok) {
-    throw new Error("Nie udało się pobrać nazwy miasta");
-  }
-
-  return result.json();
-}
-
-export async function payForOffer(offerId: string) {
-  const accessToken = await getAccessToken();
-  const result = await fetch(`${process.env.API_URL}/offer/${offerId}/pay`, {
+export async function payForOffer(offerId: string): Promise<Offer> {
+  const result = await fetchWrapper<Offer>(`/lease/offer/${offerId}/pay`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    auth: true,
+    errorMessage: "Nie udało się opłacić oferty",
   });
 
-  if (!result.ok) {
-    throw new Error("Nie udało się opłacić oferty");
-  }
-
-  return result.json();
+  return result;
 }
