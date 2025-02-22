@@ -5,6 +5,7 @@ import { getCityNameById } from "@/lib/actions/geo-actions";
 import { getImagesByOfferId } from "@/lib/actions/image-actions";
 import { getOfferById } from "@/lib/actions/offer-actions";
 import { House, LandPlot, MapPinHouse } from "lucide-react";
+import Link from "next/link";
 
 export default async function OfferPage({ params }: { params: Promise<{ offerId: string }> }) {
   const offerId = (await params).offerId;
@@ -56,7 +57,9 @@ export default async function OfferPage({ params }: { params: Promise<{ offerId:
           </div>
         </div>
         <div className="mt-auto flex flex-col gap-5 h-1/5 justify-end">
-          <Button className="w-full font-semibold">Umów się na oględziny</Button>
+          <Link href={`/messages?${new URLSearchParams({ receiverId: offer.appUserId }).toString()}`}>
+            <Button className="w-full font-semibold">Wyślij wiadomość do właściciela</Button>
+          </Link>
           <RequestLeaseDialog offerId={offerId} />
         </div>
       </div>
