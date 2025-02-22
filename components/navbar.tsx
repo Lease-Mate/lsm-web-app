@@ -74,6 +74,10 @@ export default function Navbar() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
+                <Link href={"/messages"}>Wiadomości</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
                 <Link href={"/offer/rent/ask"}>Zapytania</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -81,7 +85,6 @@ export default function Navbar() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Ustawienia</DropdownMenuItem>
-              <DropdownMenuItem>Pomoc</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <form action={handleLogout} className="flex" ref={formRef}>

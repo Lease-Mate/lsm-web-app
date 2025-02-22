@@ -64,3 +64,17 @@ export type Payment = {
   status: "PAID" | "UNPAID";
   paymentDate: string;
 };
+
+export type Chat = {
+  chatId: string;
+  userId: string;
+};
+
+export type Message = {
+  id: string;
+  chatId: string;
+  sender: string;
+  content: string;
+  timestamp: string;
+  sessionId: string;
+};
